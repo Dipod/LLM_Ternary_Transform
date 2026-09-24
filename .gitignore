@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Agent tooling (managed worktrees are not repository content)
+.kilo/worktrees/
+
+# Editors / OS
+.idea/
+.vscode/
+Thumbs.db
+Desktop.ini
+
+# Models, datasets and experiment outputs (never commit weights or datasets)
+.cache/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.gguf
+*.onnx
+results/*
+!results/decision_report.md
+!results/README.md
+data/
+logs/

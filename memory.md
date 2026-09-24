@@ -1,0 +1,12 @@
+# memory.md
+
+Strict long-term project memory: facts and decisions that must survive session boundaries and that no other store holds. Entries are dated. No secrets, no PII, no dataset or model excerpts.
+
+Agents add entries when the user asks to remember something, and use this file as the fallback store when no other memory provider can save.
+
+## Entries
+
+- 2026-09-24 — Репозиторий развёрнут как агентный каркас под Python/ML-исследование (тернарная конвертация LLM, TCD / ExTernD-Lite). Правила: `AGENTS.md` плюс шесть файлов в `.kilo/rules/` (verification-gates, research-discipline, python-standards, sdd-integrations, subagents, project-memory). Агенты: 13 ролей с префиксом `py-` в `.kilo/agents/`. Цикл разработки: OpenSpec (`openspec/`, команды `/opsx:propose|apply|archive|explore`), CLI проверен (`OpenSpec root: ok`). MCP-серверы не подключены: факты подтверждаются запуском кода или официальной документацией. Инструменты качества объявлены в правилах (ruff, mypy, pytest, GitHub Actions CI), их конфиги появятся с первым изменением кода. Коммуникационный режим хранится в `.dev.env` (`CAVEMAN=auto`). Следующий шаг — первое изменение OpenSpec: окружение и каркас Phase 0 по критическому пути C2 → C6 → F2.
+- 2026-09-24 — Окружение: создан `.venv` на единственном интерпретаторе Python 3.14.3; установлены ruff 0.16.8, mypy 2.3.1, pytest 9.1.1 (запинены в `requirements-dev.txt`). ML-стек (`requirements.txt`: torch, transformers, datasets, numpy, scikit-learn, matplotlib) намеренно не установлен — тяжёлые зависимости ставятся под задачу. Добавлены `pyproject.toml` (конфиги ruff/mypy/pytest), `.github/workflows/ci.yml`, `tests/test_environment.py`. Markdown исключён из ruff: ruff 0.16 переформатирует code-блоки, а `PROJECT_PLAN.md` и `PHASE0_*.md` — human-owned. MCP-серверы по решению пользователя не подключаем.
+- 2026-09-24 — Железо: две GPU — NVIDIA T400 4 GB и AMD Radeon RX 7900 XTX 24 GB; пользователь указал использовать AMD 24 GB. Выбор build torch (CPU / CUDA / ROCm) намеренно не зафиксирован, решается при первой задаче, которой torch нужен. Факт ROCm/Windows не проверялся.
+- 2026-09-24 — Глобальный `kilo.jsonc` содержит 13 агентов `1c-*` из sibling-проекта «personal cabinet»; из этого репозитория он не редактируется (AGENTS.md запрещает трогать sibling). В проектный `.kilo/kilo.json` добавлен PowerShell-allowlist для bash: глобальный блок разрешений настроен на Unix-команды и не срабатывал. MCP-серверы в обоих конфигах отсутствуют.

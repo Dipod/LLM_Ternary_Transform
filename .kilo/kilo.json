@@ -1,0 +1,26 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "snapshot": false,
+  "permission": {
+    "bash": {
+      "*": "ask",
+      "Get-ChildItem *": "allow",
+      "Get-Content *": "allow",
+      "Get-ChildItem -Recurse *": "allow",
+      "Select-String *": "allow",
+      "Test-Path *": "allow",
+      "Resolve-Path *": "allow",
+      "Get-Command *": "allow",
+      "Measure-Object *": "allow",
+      "Get-CimInstance *": "allow",
+      "git status*": "allow",
+      "git log*": "allow",
+      "git diff*": "allow",
+      "git show*": "allow",
+      "git branch*": "allow",
+      "git ls-files*": "allow",
+      "git worktree list*": "allow",
+      "openspec *": "allow"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+# Local gate toolchain (.kilo/rules/verification-gates.md).
+ruff==0.16.8
+mypy==2.3.1
+pytest==9.1.1

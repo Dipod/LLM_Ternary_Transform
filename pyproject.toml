@@ -1,0 +1,36 @@
+# Tooling configuration for LLM_Ternary_Transform.
+# Python 3.10+ (AGENTS.md -> Project info). Runtime dependencies live in requirements.txt;
+# local gate tooling in requirements-dev.txt.
+# Gate chain: ruff check -> ruff format --check -> mypy -> pytest
+# (.kilo/rules/verification-gates.md).
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# "*.md" is excluded because ruff 0.16 reformats Python code blocks inside Markdown;
+# PROJECT_PLAN.md and PHASE0_*.md are human-owned plan-of-record documents (AGENTS.md).
+extend-exclude = [".kilo/worktrees", "results", "*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+strict_equality = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_reexport = true
+exclude = ["^\\.venv/", "^\\.kilo/worktrees/"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q"

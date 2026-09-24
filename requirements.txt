@@ -1,0 +1,15 @@
+# Runtime dependencies for Phase 0.
+#
+# Not installed yet on purpose: heavy dependencies (torch) are installed only when the
+# task needs them (.kilo/rules/research-discipline.md -> Cost discipline). The torch build
+# and its index are chosen when the first experiment task needs it; hardware target:
+# NVIDIA T400 4 GB + AMD Radeon RX 7900 XTX 24 GB.
+#
+# Versions that affect numerics are recorded per experiment
+# (.kilo/rules/research-discipline.md -> Reproducibility).
+torch
+transformers
+datasets
+numpy
+scikit-learn
+matplotlib

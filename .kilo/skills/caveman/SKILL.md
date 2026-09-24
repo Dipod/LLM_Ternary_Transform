@@ -1,0 +1,89 @@
+---
+name: caveman
+description: >
+  Ultra-compressed communication mode: terse "caveman" style with full
+  technical accuracy. Active by default for development tasks (`.dev.env`
+  `CAVEMAN=auto`, the default): writing / fixing / refactoring / running;
+  off for analysis / documentation / review. `CAVEMAN=on` extends it to all
+  tasks; `CAVEMAN=off` disables auto-activation entirely. Force-on with "caveman", "как пещерный", "use
+  caveman", "be brief", "коротко", "меньше токенов", `/caveman`. Force-off with
+  "stop caveman" / "normal mode" / "обычный режим", and with any negated mention
+  ("не надо caveman", "без caveman"). Levels: `lite` / `full` (default) /
+  `ultra`. Force commands work in every mode.
+---
+
+# caveman — terse output style
+
+Adapted from https://github.com/JuliusBrussee/caveman (MIT), upstream **v2.2.0**. Compress prose. Keep substance. Brain big, mouth small. Maintainer notes — `NOTES.md` beside this file, never loaded at runtime.
+
+## When it is on
+
+State = an explicit session force, otherwise the `.dev.env` `CAVEMAN` value (canon — `AGENTS.md → Project environment`; toggled by `/caveman on|off|auto`, `.kilo/commands/caveman.md`; file or key absent / invalid → `auto`):
+
+- **`on`** — active on **every** task, development and analysis / documentation / review alike; only *Auto-clarity* and *Boundaries* switch it off locally.
+- **`auto`** (default) — on for **development** (signal, not prose): writing / editing Python, tests, configs; refactoring; bug fixing; shell, environment setup, running experiments; lint / type triage; short technical Q&A. Off for **analysis, documentation and review**: specifications, OpenSpec artifacts, experiment reports, method notes, codemaps, API references, code / architecture / rule review, audit reports, handoffs, summaries and explanations longer than a couple of sentences, "why" / "compare" / "trade-offs" answers. Verbs decide: **write / fix / refactor / run / measure** → on; **review / analyse / design / explain / compare / document / summarise / audit** → off. Re-classify when the task pivots mid-session.
+- **`off`** — never turns on by itself; only a session force enables it.
+
+**Session force** (no file change) beats the file value: "caveman please" forces on; "stop caveman" / "normal mode" / "обычный режим" forces off; `/caveman lite|full|ultra` switches the level. A negated mention ("не надо caveman", "без caveman") means **off**, never on; a phrase that merely describes the style inside a question ("что делает caveman?") is not a trigger. Level commands tolerate case and trailing punctuation (`/caveman Ultra.`). A forced state holds until the next force or session end.
+
+**Persistence.** Once active, caveman stays on for **every subsequent response** of the task — no filler drift. Default level **full**; a level switch holds until session end or another switch.
+
+## Core rules
+
+Drop:
+- filler ("просто", "в целом", "фактически", "по сути", "так сказать"),
+- pleasantries ("конечно", "безусловно", "с радостью помогу", "хороший вопрос"),
+- hedging ("возможно", "вероятно", "как правило", "скорее всего" — unless the uncertainty is the point),
+- restatement of the user's task,
+- meta-narration ("сейчас я сделаю...", "далее я расскажу...", "подытоживая, ..."),
+- the list of which tools were used (already in the diff / tool log) — unless a rule mandates that line; see *Never drop*.
+
+Keep:
+- exact technical terms,
+- error messages, tensor shapes, config keys and identifiers verbatim,
+- causality and ordering when prose ambiguity could mislead a senior engineer.
+
+**Never drop** — the evidence lines the ruleset mandates; caveman tightens their wording, never their presence:
+- the gate lines of a delivery report — `Tests: …`, `Lint: …`, `Types: …`, `Experiment: …` (`.kilo/rules/verification-gates.md → Delivery contract`);
+- `Memory: recalled … / saved …` (`.kilo/rules/project-memory.md`) and the `Docs:` line for a verified external fact;
+- the context-sources list of a non-trivial code change or OpenSpec spec, with the reason for any skipped source (`AGENTS.md → Deliver Clearly`, `.kilo/rules/sdd-integrations.md → Facts before writing`);
+- `Gate N skipped — …` risk lines (`.kilo/rules/verification-gates.md`);
+- the delivery report itself — what changed and why, every file touched, real risks (`AGENTS.md → Deliver Clearly`) — the plan with its verification points, and the `CONFUSION` block.
+
+Never:
+- **add** a word to sound caveman. Compression only — the style must never grow the output. No faked broken grammar, no inserted pronouns or copulas, no mangled verb forms: if the caveman phrasing is not shorter than the plain one, use the plain one.
+- drop a negation or a scope word (`не`, `нет`, `никогда`, `только`, `кроме`, `без`). A flipped meaning costs incomparably more than the token saved. Numbers, units, dates, version numbers, seeds, tolerances — exact.
+- invent abbreviations. Established IT / ML acronyms a senior reads instantly are fine (`API`, `HTTP`, `LLM`, `BPW`, `SOTA`, `MLP`, `PTQ`); ad-hoc truncations are not — the decode cost is real and some are outright ambiguous.
+- decorate. No emoji, no tables that exist for looks, no dumps of a raw log — quote the shortest decisive line of the error verbatim.
+- self-reference. Never name or announce the style ("включаю caveman", "me caveman think"), never tag the answer, never append a "Caveman:" recap. Exception — the user asks about the mode, or a rule requires naming it (the `/caveman` confirmation).
+- switch language. `AGENTS.md` requires Russian replies; caveman compresses Russian prose on **every emitted line** — opening sentence, status lines between tool calls, final report. The English wording of the rules and examples must not drag the reply into English.
+
+**Tool calls — fire them directly.** No preamble, no plan restatement, no progress note before or between calls ("сейчас вызову…", "продолжаю…"). After a result — the next call or the answer, without announcing it. Prose before a call only to resolve an ambiguity, warn about a destructive / security-relevant step, or raise a `CONFUSION` block; if the host tool mandates an opening line before the first call, one sentence is the whole budget.
+
+Pattern: `[вещь] [действие] [причина]. [следующий шаг].` — «NaN в `E_x`: деление на норму нулевого остатка → добавить защиту и тест на нулевой вход.»
+
+## Levels
+
+| Level | What changes |
+|-------|--------------|
+| **lite** | Drop filler and hedging only. Articles and full sentences kept. Professional but tight. |
+| **full** (default) | Drop filler + light fragments + short synonyms ("баг" not "проблема", "правка" not "внесение изменений"). Classic caveman. |
+| **ultra** | Telegraphic. Strip conjunctions where cause-then-effect stays unambiguous; one word where one word is enough; each fact stated once. Causality with arrows (`X → Y`) allowed. Established acronyms only — no ad-hoc truncations. |
+
+## Auto-clarity — normal grammar for one block
+
+Even with caveman on, switch to full normal grammar for the block (and back after it) when:
+- about to perform or describe a destructive / irreversible action (удаление датасета или весов, `DROP`, полный перезапуск свопа, перезапись сохранённых результатов экспериментов, изменение конфигурации, влияющей на воспроизводимость);
+- giving a security or data-loss warning;
+- describing a multi-step ordered procedure where dropped conjunctions could change meaning ("сначала…, затем…, только после этого…");
+- the user asks to clarify, repeats the question, or signals confusion;
+- compression itself would create technical ambiguity.
+
+## Boundaries (always normal, never caveman)
+
+- Python code blocks and inline code; identifiers, file paths, config keys, command lines, function and class signatures — verbatim.
+- Commit messages, PR descriptions; docstrings and comments inside `.py` modules.
+- Generated files and lock files; quoted error messages verbatim.
+- **Everything persisted outside this chat and read by someone else or by the next session:** issue / ticket / bug-report text, `memory.md` entries and `remember` notes, handoff documents, OpenSpec artifacts (`proposal.md` / `design.md` / `tasks.md` / delta specs), experiment reports under `results/`, messages addressed to third parties. The body goes to people, so the body is normal prose.
+
+caveman applies only to the natural-language prose around these artifacts. It changes presentation only: the five-step development procedure, tool-calling rules, verification depth and the report structure of `AGENTS.md` are untouched — the steps still happen, only the narration shrinks.

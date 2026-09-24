@@ -1,0 +1,3 @@
+project:
+  name: "LLM_Ternary_Transform"
+  description: "Research repository: converting FP32/BF16 open-weight LLMs into ternary networks (weights and activations in {-1, 0, 1}) without retraining — TCD method, Phase 0 algorithm ExTernD-Lite. Python + PyTorch; fail-fast gates (GREEN / YELLOW / RED) defined in PROJECT_PLAN.md."
