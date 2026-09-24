@@ -1,0 +1,51 @@
+# Exploration config (mu-curve diagnostic, 2026-09-24). NOT the canonical config.
+# Purpose: re-check the claim that "more trits per weight gives no win". In this scheme the
+# trit budget per weight is the rank multiplier mu (k = mu * min(out, in)), so this sweeps
+# mu = 1..8 and records both E_x_fit and the effective BPW, to separate the accuracy trend
+# (does E_x fall below the GREEN 0.05?) from the compression budget (GREEN needs bpw < 6.0).
+# Records go under results/mu_probe/ so the archived runs are untouched.
+
+model_id: Qwen/Qwen2.5-0.5B
+dtype: bfloat16
+device: cuda:0
+layers: [12, 21]
+slices: [dense_windows]
+target_module: gate_proj
+
+mu: 3
+tau: 0.7
+b: null
+n_inner: 50
+eps: 1.0e-8
+seed: 42
+
+dense_windows_count: 128
+many_documents_count: 1024
+seq_len: 512
+calibration_batch_size: 8
+eval_fraction: 0.2
+
+dataset_id: Salesforce/wikitext
+dataset_config: wikitext-2-raw-v1
+dataset_split: train
+
+importance_lambda: 0.0
+reorder: false
+
+results_dir: results/mu_probe
+runtime_budget_s: 600.0
+
+tolerance:
+  recon_rtol: 1.0e-5
+  recon_atol: 1.0e-5
+  cross_check_rtol: 0.5
+  e_x_atol: 1.0e-4
+  reproduce_rtol: 1.0e-5
+
+# 2 layers x 6 mu x 2 tau = 24 runs + 2 baselines.
+sweep:
+  mu: [1, 2, 3, 4, 6, 8]
+  tau: [0.7, 1.0]
+  importance: [false]
+  reorder: [false]
+  n_inner: [50]

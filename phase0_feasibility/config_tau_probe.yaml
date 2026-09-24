@@ -1,0 +1,51 @@
+# Exploration config (tau-at-mu4 probe, 2026-09-24). NOT the canonical config.
+# The mu-curve probe showed E_x reaches the GREEN accuracy bar (<=0.05) at mu=4
+# (E_x ~0.031) but costs bpw ~6.7-7.5, above the GREEN bpw<6.0 budget. At mu=4 the
+# GREEN budget needs sparsity > 1 - 6.0/(4*5760/4864) = 0.7333. This probes whether a
+# higher tau raises sparsity enough (and now much E_x slack there is) to reach GREEN.
+# Records go under results/tau_probe/ so archived runs are untouched.
+
+model_id: Qwen/Qwen2.5-0.5B
+dtype: bfloat16
+device: cuda:0
+layers: [12, 21]
+slices: [dense_windows]
+target_module: gate_proj
+
+mu: 3
+tau: 0.7
+b: null
+n_inner: 50
+eps: 1.0e-8
+seed: 42
+
+dense_windows_count: 128
+many_documents_count: 1024
+seq_len: 512
+calibration_batch_size: 8
+eval_fraction: 0.2
+
+dataset_id: Salesforce/wikitext
+dataset_config: wikitext-2-raw-v1
+dataset_split: train
+
+importance_lambda: 0.0
+reorder: false
+
+results_dir: results/tau_probe
+runtime_budget_s: 600.0
+
+tolerance:
+  recon_rtol: 1.0e-5
+  recon_atol: 1.0e-5
+  cross_check_rtol: 0.5
+  e_x_atol: 1.0e-4
+  reproduce_rtol: 1.0e-5
+
+# 2 layers x 3 mu x 4 tau = 24 runs + 2 baselines.
+sweep:
+  mu: [3, 4, 5]
+  tau: [1.0, 1.3, 1.5, 1.7]
+  importance: [false]
+  reorder: [false]
+  n_inner: [50]

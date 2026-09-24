@@ -1,0 +1,69 @@
+# Phase 0 configuration. Every key is consumed by phase0_feasibility.config.load_config;
+# no algorithm carries its own default (AGENTS.md -> Python standards -> Configuration).
+#
+# Values fixed by design.md (change phase0-ternary-feasibility): model/layer (D10),
+# rank multiplier and threshold (D1-D2), inner iterations and epsilon (D3),
+# batch size rule (D4), gradient-free importance (D7), calibration slice.
+
+model_id: Qwen/Qwen2.5-0.5B
+dtype: bfloat16
+# Compute device for the calibration forward and the decomposition. Pinned explicitly
+# because the machine has two GPUs: the AMD RX 7900 XTX (compute, ROCm) and the NVIDIA
+# T400 (display adapter, CUDA). "cuda" is whatever the installed torch build exposes —
+# the ROCm build maps it to the AMD card, a CUDA build to the T400 — so never rely on
+# "auto" here. Use "cpu" to run the CPU path. design.md D9 was updated for this.
+device: cuda:0
+# Decoder layers to decompose; each is scored and recorded as its own run.
+# Canonical config stays on the archived layer 12 (change phase0-calibration-robustness D5).
+layers: [12]
+target_module: gate_proj
+
+# Default run parameters.
+mu: 2
+tau: 0.7
+# null -> b = min(256, floor(min(out, in) / 8)) as specified in design.md D4.
+b: null
+n_inner: 15
+eps: 1.0e-8
+seed: 42
+
+# Calibration slice (design.md phase0-calibration-robustness -> Slice definitions D1-D4).
+# Canonical config stays on the archived docs128 slice so the archived runs remain
+# reproducible by this harness; the re-check grid lives in config_recheck.yaml.
+dataset_id: Salesforce/wikitext
+dataset_config: wikitext-2-raw-v1
+dataset_split: train
+slices: [docs128]
+dense_windows_count: 128
+many_documents_count: 1024
+seq_len: 512
+# Held-out fraction for the deterministic contiguous fit/held-out split.
+eval_fraction: 0.2
+calibration_batch_size: 8
+
+# Importance weighting (design.md D7); lambda=0 and off in the primary run.
+importance_lambda: 0.0
+# Column reordering (design.md D8); off in the primary run.
+reorder: false
+
+# Recorded runs land under the repository-root results/ directory, which .gitignore excludes
+# (results/*) except the curated summaries.
+results_dir: results
+# Per-layer runtime budget in seconds (feasibility-gate spec: 10 minutes).
+runtime_budget_s: 600.0
+
+tolerance:
+  recon_rtol: 1.0e-5
+  recon_atol: 1.0e-5
+  cross_check_rtol: 0.5
+  e_x_atol: 1.0e-4
+  reproduce_rtol: 1.0e-5
+
+# Reduced sweep (design.md -> Metrics and gate): mu x tau x importance, reorder off,
+# plus the mu=1 baseline. Reorder-on variants are added only if the result is ambiguous.
+sweep:
+  mu: [2, 3]
+  tau: [0.7, 1.0]
+  importance: [false, true]
+  reorder: [false]
+  n_inner: [15]

@@ -1,15 +1,13 @@
-# Runtime dependencies for Phase 0.
-#
-# Not installed yet on purpose: heavy dependencies (torch) are installed only when the
-# task needs them (.kilo/rules/research-discipline.md -> Cost discipline). The torch build
-# and its index are chosen when the first experiment task needs it; hardware target:
-# NVIDIA T400 4 GB + AMD Radeon RX 7900 XTX 24 GB.
+# Runtime dependencies for Phase 0, pinned to the versions verified in this change
+# (task 1.1). torch is installed from PyPI: the Windows wheel is CPU-only, matching
+# design.md D9 (CPU fp32 decomposition).
 #
 # Versions that affect numerics are recorded per experiment
 # (.kilo/rules/research-discipline.md -> Reproducibility).
-torch
-transformers
-datasets
-numpy
-scikit-learn
-matplotlib
+torch==2.14.0
+transformers==5.17.0
+datasets==5.0.1
+numpy==2.5.3
+scikit-learn==1.9.1
+matplotlib==3.11.2
+pyyaml==6.0.3

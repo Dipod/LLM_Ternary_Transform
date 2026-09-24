@@ -1,0 +1,62 @@
+# Phase 0 calibration robustness re-check configuration
+# (change phase0-calibration-robustness, design.md D1-D8).
+#
+# Same schema as config.yaml; the differences are the slice modes, the three
+# evaluated layers, the eval fraction, the output directory and the sweep grid.
+# Every key is consumed by phase0_feasibility.config.load_config.
+
+model_id: Qwen/Qwen2.5-0.5B
+dtype: bfloat16
+# Same pinned device as the canonical config (ROCm maps "cuda:0" to the AMD card).
+device: cuda:0
+# Early / mid / late layers of the 24-layer model (design.md D5).
+layers: [3, 12, 21]
+target_module: gate_proj
+
+# Default run parameters.
+mu: 2
+tau: 0.7
+# null -> b = min(256, floor(min(out, in) / 8)) as specified in design.md D4.
+b: null
+n_inner: 15
+eps: 1.0e-8
+seed: 42
+
+# Calibration slices to build (design.md D1-D3): the two new modes; the archived
+# docs128 mode stays selectable but is not part of this re-check grid.
+dataset_id: Salesforce/wikitext
+dataset_config: wikitext-2-raw-v1
+dataset_split: train
+slices: [dense_windows, many_documents]
+dense_windows_count: 128
+many_documents_count: 1024
+seq_len: 512
+# Held-out fraction for the deterministic contiguous fit/held-out split.
+eval_fraction: 0.2
+calibration_batch_size: 8
+
+# Importance weighting (design.md D7); lambda=0 and off in the primary run.
+importance_lambda: 0.0
+# Column reordering (design.md D8); off in the primary run.
+reorder: false
+
+# Re-check runs land in their own directory so the archived results/ runs are untouched.
+results_dir: results/recheck
+# Per-layer runtime budget in seconds (feasibility-gate spec: 10 minutes).
+runtime_budget_s: 600.0
+
+tolerance:
+  recon_rtol: 1.0e-5
+  recon_atol: 1.0e-5
+  cross_check_rtol: 0.5
+  e_x_atol: 1.0e-4
+  reproduce_rtol: 1.0e-5
+
+# Reduced sweep (design.md -> Metrics and gate): mu x tau x importance, reorder off,
+# plus the mu=1 baseline.
+sweep:
+  mu: [2, 3]
+  tau: [0.7, 1.0]
+  importance: [false, true]
+  reorder: [false]
+  n_inner: [15]

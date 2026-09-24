@@ -102,11 +102,16 @@ in the primary run; swept on/off.
 
 ### D9 — Compute backend
 
-PyTorch on **CPU** (fp32 math). *Rationale:* the layer is small
-(`[4864, 896]`), CPU is unblocked, and it keeps the fail-fast gate independent of
-the AMD/ROCm-on-Windows setup, which needs Python 3.12 and a specific driver
-(verified facts; out of scope here). *Alternative rejected:* AMD ROCm now
-(setup risk on the critical path); NVIDIA T400 (4 GB, below the recommended 8 GB).
+PyTorch on **CPU** (fp32 math) in the original decision. **Updated 2026-09-24
+(artifact change, user decision):** the calibration forward and the decomposition
+run on the **AMD Radeon RX 7900 XTX** through ROCm-on-WSL (ROCDXG, ROCm 7.2.1,
+`torch 2.9.1+rocm7.2.1`, Python 3.12 venv). The device is pinned explicitly
+(`device: cuda:0`) and the record names the actual GPU, because the machine also
+has an NVIDIA T400 used only as a display adapter — `auto` would be ambiguous.
+*Rationale for the change:* the CPU forward over the 128-document slice is
+tens of minutes; on the GPU the whole sweep takes seconds. *CPU path retained:*
+`device: cpu` remains valid; the original CPU rationale (unblocked, independent
+of the ROCm setup) still holds as a fallback.
 
 ### D10 — Model and target layer
 
@@ -124,6 +129,10 @@ Load the model in bf16 for the calibration forward; compute all decomposition
 math in fp32; store `B`,`C` as int8 in {-1,0,1} and `D` as fp32. *Rationale:*
 the source states values, not dtypes, so this is our decision; fp32 avoids
 accumulation error at μ=2 (`k=1792`), and int8 is the natural ternary container.
+On the ROCm path (D9) the same dtypes apply; HIP kernels are not guaranteed
+bit-deterministic, so the record names `torch_backend: rocm` and
+`torch.use_deterministic_algorithms(True)` is requested (the observed repeat run
+matched at `rtol=1e-5`).
 
 ## Algorithm specification
 
@@ -175,10 +184,13 @@ expected to fail and exists to show the gate can fire.
 
 WikiText-2 (`wikitext-2-raw-v1`, `train`), first 128 non-empty documents,
 tokenized with the model tokenizer, truncated to `seq_len = 512` (single pass,
-no stride) → up to 65,536 tokens. Capture the input activations of the target
-`gate_proj` (post-RMSNorm) with a forward hook on the calibration split. No
-evaluation/held-out split is used at this gate (it is a layer-fit, not a
-generalization test); this is stated in the report.
+no stride) → up to 65,536 tokens (the recorded slice yields 11,426 non-pad
+tokens; the actual count is reported per run). Capture the input activations of
+the target `gate_proj` (post-RMSNorm) with a forward hook on the calibration
+split, aborting the forward once the target layer has fired (exact: the input of
+layer 12 depends only on layers < 12). No evaluation/held-out split is used at
+this gate (it is a layer-fit, not a generalization test); this is stated in the
+report.
 
 ## Module layout and public surface
 
@@ -212,10 +224,13 @@ Public signatures (stable within this change):
 ## Determinism and reproducibility
 
 Seeds (`torch`, `numpy`, `random`) come from `config.yaml`; `torch.use_deterministic_algorithms(True)`
-is enabled where the CPU path supports it and any fallback is named in the
-report. Every run writes `results/<experiment-id>/{config.yaml,metrics.json,report.md}`
-with model, dtype, layer, dataset slice, calibration count, hyperparameters,
-seeds, hardware, runtime and raw metrics. Library versions (`torch`,
+is enabled where the active backend supports it and any fallback is named in the
+report. The ROCm/HIP backend (D9) is not guaranteed bit-deterministic; the record
+carries `torch_backend` and a repeat run is verified within `reproduce_rtol`.
+Every run writes `results/<experiment-id>/{config.yaml,metrics.json,report.md}`
+with model, dtype, device and device name, layer, dataset slice, calibration
+count, hyperparameters, seeds, hardware, runtime and raw metrics; the recorded
+`config.yaml` includes the swept values. Library versions (`torch`,
 `transformers`) are recorded per run.
 
 ## Risks

@@ -14,7 +14,7 @@ Read `AGENTS.md`, `.kilo/rules/sdd-integrations.md`, `.kilo/rules/research-disci
 
 - The numerical method and its exact form (e.g. how the residual deflation and the scale estimate are ordered, what the softening schedule is) — with the property it relies on.
 - Data contracts between stages: tensor shapes, dtype, device, what is cached, what is recomputed.
-- Memory and runtime budget: for a 4096×11008 layer, say what a block of 128 columns costs and what must be streamed.
+- Memory and runtime budget: for the Phase 0 layer (`gate_proj`, `[out, in] = [4864, 896]`), say what a component block of `b = min(256, ⌊min(out, in)/8⌋)` costs and what must be streamed.
 - Configuration surface: every knob that will exist, its default and the reason for the default.
 - Reproducibility: where seeds and determinism enter, what cannot be made deterministic.
 - Risks with mitigations, and the experiments that would falsify the design cheapest.
