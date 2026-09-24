@@ -2,7 +2,7 @@
 
 Agent-maintained behaviour rules for this project, written **only** by the `/evolve` command with per-entry user approval. Contract, precedence, capture discipline and entry format — `AGENTS.md → Rules self-improvement` and the `/evolve` command.
 
-Last /evolve run: 2026-09-24
+Last /evolve run: 2026-09-25
 
 ## Active rules
 
@@ -33,5 +33,19 @@ Last /evolve run: 2026-09-24
 - **Scope:** Every instruction, path or UI reference addressed to the user in this project's sessions.
 - **Evidence:** 2026-09-24 — (1) the HF-token answer gave `hf auth login`, and the user replied "Не понимаю как это сделать. Напиши абсолютный путь к файлу… создай его и предзаполни"; (2) the agent pointed a VS Code user at the CLI background-process sidebar, which the extension does not have.
 - **Refines:** `.kilo/skills/powershell-windows/SKILL.md` (host-specific command presentation) and `AGENTS.md → Deliver Clearly`.
+
+### R-005 — Compare against the strongest relevant baseline at matched budget, and sanity-check it (2026-09-25)
+
+- **Rule:** Before concluding that a method wins or loses, compare it against the strongest relevant baseline for the same task and hardware at a matched budget (equal bits, FLOPs or memory) — not against a convenient weaker one (for example FP16 against a 4-bit competitor). Validate the baseline implementation itself with a known-answer sanity check (a clearly higher-precision setting) before drawing a verdict, and pre-register the comparison and its decision rule.
+- **Scope:** Any quality or performance comparison used to justify continuing or stopping a research direction in this project.
+- **Evidence:** 2026-09-24/25 — (1) the Phase 0 gate compared against FP16; the user challenged it ("4 bits already give ~99% … maybe the project is pointless"), which forced the matched-bit comparison; (2) the first hand-rolled 4-bit baseline used naive absmax and gave E_x 0.084, nearly supporting the wrong "ternary wins" conclusion, until MSE-optimal clipping and an 8-bit sanity check (E_x 0.0045) made the comparison fair — after which integer quantization dominated.
+- **Refines:** `.kilo/rules/research-discipline.md` (no cherry-picking, fixed gates) and `AGENTS.md → Development Procedure → 4. Goal-Driven Verification`.
+
+### R-006 — For a sizeable or new direction, present the plan and an effort estimate first (2026-09-25)
+
+- **Rule:** Before starting a sizeable or newly chosen work direction (a new method, an algorithm change, a multi-step experiment), present the concrete plan and an effort/cost estimate and wait for the user's confirmation. Do not jump from a chosen option straight into implementation.
+- **Scope:** Any work direction beyond a bounded quick-fix, after the user picks an option and before edits or runs.
+- **Evidence:** 2026-09-24 — the user had to ask twice: "Выбираю A, но сначала подробнее объясни что мы будем делать и оцени трудоёмкость" and "Сначала обсудить A2".
+- **Refines:** `AGENTS.md → Development Procedure → 1. Think Before Coding — Clarify Scope First`.
 
 ## Superseded

@@ -2,9 +2,9 @@
 
 Project: converting FP32/BF16 open-weight LLMs into pure ternary networks (weights and activations in {-1, 0, 1}) **without retraining**, by algorithmic reconstruction of activation pathways (TCD method; Phase 0 algorithm — ExTernD-Lite). This is a research repository: fail-fast gates, no production target yet.
 
-Normative sources, highest precedence first: `USER-RULES.md` / `memory.md` → `LLM-RULES.md` → this file and the on-demand rules in `.kilo/rules/` → `openspec/specs/` (behaviour contracts) → `PROJECT_PLAN.md`, `PHASE0_*.md` (plan of record, human-owned).
+Normative sources, highest precedence first: `USER-RULES.md` / `memory.md` → `LLM-RULES.md` → this file and the on-demand rules in `.kilo/rules/` → `openspec/specs/` (behaviour contracts) → `inputs/PROJECT_PLAN.md`, `inputs/PHASE0_*.md` (plan of record, human-owned).
 
-Language: rules, code, comments and repository artifacts are English (matching `PROJECT_PLAN.md`); replies to the user are Russian.
+Language: rules, code, comments and repository artifacts are English (matching `inputs/PROJECT_PLAN.md`); replies to the user are Russian.
 
 # Process
 
@@ -36,7 +36,7 @@ Promotion triggers — full-cycle regardless of size: the decomposition math; an
 
 Plan the exact files, changes, success checks and relevant risks before editing. Name a simpler approach when one exists. Resolve low-risk ambiguity with a stated assumption consistent with the repository.
 
-**Material fork → stop dependent work and ask using CONFUSION.** Triggers: numerical method choice; metric definition or tolerance; gate thresholds; dataset/model selection; dtype and precision policy; anything that invalidates completed experiments; a conflict with `PROJECT_PLAN.md` or a recorded result; anything hard to reverse.
+**Material fork → stop dependent work and ask using CONFUSION.** Triggers: numerical method choice; metric definition or tolerance; gate thresholds; dataset/model selection; dtype and precision policy; anything that invalidates completed experiments; a conflict with `inputs/PROJECT_PLAN.md` or a recorded result; anything hard to reverse.
 
 ```text
 CONFUSION: <conflict / ambiguity>
@@ -66,7 +66,7 @@ Report changes, every modified file, checks performed and real limitations. For 
 
 - **Stack**: Python 3.10+; PyTorch (CPU or CUDA), `transformers`, `datasets`, `scikit-learn`, `matplotlib`, `numpy`. Phase 4+ adds a C++/AVX-512 kernel with Python bindings.
 - **Toolchain**: `ruff check .`, `ruff format --check`, `mypy .`, `pytest`; CI (GitHub Actions) runs the same on push. Configs (`pyproject.toml`, `.github/workflows/`) arrive with the first project change — until then the commands above are the contract, and a task that needs them states that they must be created first.
-- **Layout convention**: package per phase as in `PROJECT_PLAN.md` (e.g. `phase0_feasibility/` with `decomposition/`, `calibration/`, `analysis/`, `results/`); tests under `tests/`; experiment outputs under `results/` (git-ignored except curated summaries and `decision_report.md`).
+- **Layout convention**: package per phase as in `inputs/PROJECT_PLAN.md` (e.g. `phase0_feasibility/` with `decomposition/`, `calibration/`, `analysis/`, `results/`); tests under `tests/`; experiment outputs under `results/` (git-ignored except curated summaries and `decision_report.md`).
 - **Hardware**: CPU with 16 GB+ RAM minimum; GPU with 8 GB+ VRAM recommended for the sweep and imatrix work.
 - **Model and data**: HuggingFace models and datasets are cached outside the repository (default HF cache); never commit weights or datasets.
 
@@ -138,5 +138,5 @@ One logical change at a time; current sources outrank stale summaries. Validate 
 - **Working copy**: `C:\source\repos\LLM_Ternary_Transform`, branch `main`, remote `git@github.com:Dipod/LLM_Ternary_Transform.git`. Commit only when explicitly asked.
 - **Sibling repository** `C:\source\repos\personal cabinet` (a 1C project) is the source of this ruleset's shape, not a dependency: never read or modify it to complete a task in this repository.
 - **Python environment**: one virtual environment per checkout (`python -m venv .venv`), never install into the system interpreter; heavy dependencies (torch) are installed only when a task needs them.
-- **Long-running work**: model downloads, calibration and sweeps are long. State an estimate before starting anything above roughly ten minutes, and prefer the reduced sweep from `PHASE0_PREREQUISITES.md → E1` over the full grid.
+- **Long-running work**: model downloads, calibration and sweeps are long. State an estimate before starting anything above roughly ten minutes, and prefer the reduced sweep from `inputs/PHASE0_PREREQUISITES.md → E1` over the full grid.
 - **Credentials**: none are stored in the repository; anything requiring a token or paid API is out of scope unless the user provides it explicitly.
