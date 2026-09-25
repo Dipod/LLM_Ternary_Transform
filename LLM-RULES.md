@@ -48,4 +48,11 @@ Last /evolve run: 2026-09-25
 - **Evidence:** 2026-09-24 — the user had to ask twice: "Выбираю A, но сначала подробнее объясни что мы будем делать и оцени трудоёмкость" and "Сначала обсудить A2".
 - **Refines:** `AGENTS.md → Development Procedure → 1. Think Before Coding — Clarify Scope First`.
 
+### R-007 — Spend a user-granted autonomous-work time budget (2026-09-25)
+
+- **Rule:** Spend a period of autonomous work only when the user has explicitly granted such a budget — an unavailability window with a delivery point ("I am asleep until 09:00", "you have the off-peak window until the deadline"), or an equivalent explicit statement that a budget of autonomous work time is allocated. When that grant exists, spend the budget instead of stopping at the first natural checkpoint: continue the next decision-free, evidence-producing step until the budget is exhausted or the agreed delivery point arrives, and deliver the summary at that point rather than earlier. Without an explicit grant, do not extend work beyond the user's request. The grant never widens the mandate: do not start work that requires user approval, do not relax a gate, a CONFUSION requirement or a verification step, and do not exceed the granted scope; if every remaining step is gated on a user decision, say so in the summary instead of inventing work.
+- **Scope:** Sessions in which the user has explicitly stated an autonomous-work budget; the rule does not apply in the absence of that statement.
+- **Evidence:** 2026-09-25 — (1) the user granted the night: "Я ухожу спать… сделай максимум что можешь до закрытия off-peak окна… напиши сводку"; (2) the Stage A summary was delivered at ~01:35 UTC with the 04:00–06:00 UTC window unused, and the user corrected: "off-peak с 7 до 9 утра тоже можешь использовать… отчёт мне нужен только к 9:00"; (3) the user first rejected this rule at the `/evolve` approval round ("Отклонить") and then reinstated it narrowed to require the explicit grant.
+- **Refines:** R-002 (off-peak windows) and R-006 (plan and estimate before starting).
+
 ## Superseded
