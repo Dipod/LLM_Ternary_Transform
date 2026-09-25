@@ -35,5 +35,7 @@ Desktop.ini
 results/*
 !results/decision_report.md
 !results/README.md
+!results/cross_architecture_transfer_survey.md
+!results/architecture_survey.md
 data/
 logs/
