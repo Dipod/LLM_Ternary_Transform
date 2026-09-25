@@ -44,7 +44,7 @@ exclude = ["^\\.venv/", "^\\.kilo/worktrees/", "^results/"]
 # Third-party packages without type stubs are narrowed at the boundary
 # (phase0_feasibility/calibration/loader.py); do not fail the gate on them.
 [[tool.mypy.overrides]]
-module = ["transformers.*", "datasets.*", "yaml.*"]
+module = ["transformers.*", "datasets.*", "yaml.*", "torchao.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

@@ -1,0 +1,109 @@
+# Phase 1 Stage A configuration (change phase1-redundancy-cartography).
+# Every tunable value reaches the algorithms as an explicit argument; no algorithm
+# carries its own default (AGENTS.md -> Python standards -> Configuration).
+# Values fixed by design.md: models (D2), gate and evaluation set (D3-D4),
+# healing budget (D5), importance measures (D6), search budgets (D8).
+
+# --- Models -------------------------------------------------------------------
+cartography_model_id: Qwen/Qwen2.5-0.5B
+target_model_id: Qwen/Qwen3-8B
+dtype: bfloat16
+# ROCm exposes the AMD card through the "cuda" API; the T400 is a display adapter.
+device: cuda:0
+seed: 42
+results_dir: results
+
+# --- Data slices --------------------------------------------------------------
+# Calibration slice reuses the Phase 0 definition (65,536 tokens) so cartography
+# measurements are comparable with the recorded Phase 0 and STOP artifacts.
+dataset_id: Salesforce/wikitext
+dataset_config: wikitext-2-raw-v1
+calibration_split: train
+# Window length in tokens; 128 windows x 512 = 65,536 tokens.
+seq_len: 512
+dense_windows_count: 128
+# Fixed perplexity slice: first N windows of the test split, seq_len each.
+ppl_split: test
+ppl_windows_count: 128
+ppl_batch_size: 4
+
+# --- Benchmarks (design.md D4) ------------------------------------------------
+benchmarks:
+  tasks: [arc_easy, hellaswag, lambada_openai, gsm8k]
+  num_fewshot: [0, 0, 0, 4]
+  # null = full task; an integer caps the number of items (cheap smoke runs).
+  limit: null
+  batch_size: 8
+
+# --- Integer baselines (spec phase1/compression-gate R3) ----------------------
+baselines:
+  bits: [4, 5, 6, 8]
+  group_size: 128
+  # MSE-optimal clip search resolution, identical to the recorded Phase 0 arm.
+  n_clip: 24
+  sanity_bits: 8
+  sanity_ppl_rel_tol: 0.001
+
+# --- Gate (spec phase1/compression-gate R1, R7) -------------------------------
+gate:
+  ppl_rel_tol: 0.005
+  bench_delta_tol: 0.5
+  go_bytes_ratio: 0.9
+  yellow_bytes_ratio: 1.1
+  min_compression: 2.0
+
+# --- Cartography (spec phase1/redundancy-cartography) -------------------------
+cartography:
+  # Axis A: whole-unit ablation, ranked by activation-weighted magnitude.
+  structured:
+    kinds: [block, head, ffn_dim]
+    # Proxy budget: KL divergence (nats) on the benign slice at which the axis
+    # declares the configuration degraded.
+    kl_budget: 0.10
+    max_removals: 64
+  # Axis B: least-significant activation directions, removed by orthogonalization.
+  directions:
+    n_directions: [8, 16, 32, 64]
+    layer_bands: [[8, 16], [16, 23]]
+    kl_budget: 0.10
+  # Axis C: the TCD ternary representation itself.
+  ternary:
+    layer: 12
+    mu: [2, 3, 4]
+    tau: 0.7
+    nm_patterns: [[2, 4], [4, 8], [6, 8]]
+    rank_fractions: [0.8, 0.6, 0.4]
+    e_x_budget: 0.05
+  # Finite fail-cheap budget (spec R9).
+  budget_gpu_hours_per_axis: 4.0
+  # Benign slice for the KL proxy: the same fixed calibration slice.
+  kl_probe_batch_size: 8
+
+# --- Probe -------------------------------------------------------------------
+probe:
+  # Cumulative FFN-dimension removal fractions for the end-to-end degradation
+  # sweep. The cartography KL proxy stops at 5%, but the 5% probe improved
+  # perplexity, so the proxy is conservative and the end-to-end curve is the
+  # arbiter. Fractions are cumulative and strictly increasing.
+  ffn_sweep_fractions: [0.06, 0.08, 0.10, 0.15, 0.25]
+
+# --- Healing (spec phase1/compression-gate R6, design.md D5) ------------------
+healing:
+  enabled: true
+  max_gpu_seconds: 3600.0
+  lora_rank: 8
+  learning_rate: 1.0e-4
+  max_steps: 400
+  target_tokens: 65536
+
+tolerance:
+  ppl_atol: 1.0e-6
+  kl_atol: 1.0e-6
+  bytes_rtol: 1.0e-9
+
+# Reduced defaults for a cheap smoke run of the cartography axes.
+smoke:
+  structured_max_removals: 6
+  directions_n: [4]
+  ternary_mu: [2]
+  limit: 5
