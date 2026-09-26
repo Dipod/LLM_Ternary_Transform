@@ -12,7 +12,11 @@ Run in this order, on the artifacts as they are after the last edit:
 | 2 | Style | `ruff format --check .` | formatting drift |
 | 3 | Types | `mypy .` | type errors, wrong call signatures, missing annotations on public API |
 | 4 | Tests | `pytest` | behaviour, regressions, shape/dtype assumptions |
-| 5 | CI | GitHub Actions on push | the same four on a clean checkout |
+
+GitHub Actions is disabled for this repository (`.github/workflows/README.md`), so the chain is
+gates 1–4, run locally on the artifacts as they are after the last edit. A clean-checkout
+reproduction is no longer automatic: when it matters (a packaging, dependency or environment
+change), run the four commands once in a fresh virtual environment and report it.
 
 Rules for the chain:
 

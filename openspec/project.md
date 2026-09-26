@@ -24,7 +24,7 @@ Phase 0 is implemented and its change is **archived** (`openspec/changes/archive
 
 Python 3.12+ (raised by the pinned `numpy 2.5.3` `requires-python`); PyTorch for Phase 0 (`transformers`, `datasets`, `scikit-learn`, `matplotlib`, `numpy`). Phase 4+ adds a C++/AVX-512 kernel with Python bindings.
 
-Toolchain for gates: `ruff check`, `ruff format --check`, `mypy`, `pytest` (network tests excluded by default via the `network` marker), GitHub Actions CI.
+Toolchain for gates: `ruff check`, `ruff format --check`, `mypy`, `pytest` (network tests excluded by default via the `network` marker), run locally — GitHub Actions is disabled for this repository (`.github/workflows/README.md`).
 
 Hardware: CPU with 16 GB+ RAM; an AMD Radeon RX 7900 XTX (24 GB) via ROCm-on-WSL is the compute device for Phase 0 (`design.md` D9, updated 2026-09-24). The CPU path remains valid (`device: cpu`); GPU with 8 GB+ VRAM recommended for later sweeps.
 

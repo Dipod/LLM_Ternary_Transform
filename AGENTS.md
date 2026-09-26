@@ -65,7 +65,7 @@ Report changes, every modified file, checks performed and real limitations. For 
 ## Project info
 
 - **Stack**: Python 3.10+; PyTorch (CPU or CUDA), `transformers`, `datasets`, `scikit-learn`, `matplotlib`, `numpy`. Phase 4+ adds a C++/AVX-512 kernel with Python bindings.
-- **Toolchain**: `ruff check .`, `ruff format --check`, `mypy .`, `pytest`; CI (GitHub Actions) runs the same on push. Configs (`pyproject.toml`, `.github/workflows/`) arrive with the first project change — until then the commands above are the contract, and a task that needs them states that they must be created first.
+- **Toolchain**: `ruff check .`, `ruff format --check`, `mypy .`, `pytest`; the local chain is the whole contract — GitHub Actions is disabled (see `.github/workflows/README.md`), so nothing runs on push. Configs (`pyproject.toml`) exist; a task that needs a command not covered here states that it must be created first.
 - **Layout convention**: package per phase as in `inputs/PROJECT_PLAN.md` (e.g. `phase0_feasibility/` with `decomposition/`, `calibration/`, `analysis/`, `results/`); tests under `tests/`; experiment outputs under `results/` (git-ignored except curated summaries and `decision_report.md`).
 - **Hardware**: CPU with 16 GB+ RAM minimum; GPU with 8 GB+ VRAM recommended for the sweep and imatrix work.
 - **Model and data**: HuggingFace models and datasets are cached outside the repository (default HF cache); never commit weights or datasets.
@@ -74,7 +74,7 @@ Report changes, every modified file, checks performed and real limitations. For 
 
 ## Quality gate chain
 
-Order: `ruff check` → `ruff format --check` → `mypy` → `pytest` → CI.
+Order: `ruff check` → `ruff format --check` → `mypy` → `pytest`. GitHub Actions is disabled (`.github/workflows/README.md`): the chain is run locally on the final content, and there is no CI run on push.
 
 - A failure is fixed, not silenced: no blanket `# noqa`, no `# type: ignore` without a stated reason, no skipped test without an explicit reason in the report.
 - A numerical change additionally requires a unit test against a known-answer fixture (analytical case with a hand-computed expected value).
